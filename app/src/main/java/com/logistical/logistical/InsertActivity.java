@@ -34,7 +34,7 @@ public class InsertActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     HashMap<String, EditText> mse = new HashMap<String, EditText>();
     HashMap<String, Spinner> mss = new HashMap<String, Spinner>();
-    //private int staffSelected = 1;
+    private int staffSelected = 1;
     private ArrayList<String> StaffString = new ArrayList<>();
     private ArrayAdapter<String> StaffAdapter;
     private ListViewAdapter listviewadapter;
@@ -96,6 +96,13 @@ public class InsertActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem item) {
+                try {
+                    save();
+                    staffSelected = Integer.parseInt(mss.get("staffnum").getSelectedItem().toString());
+                } catch (NullValueException e) {
+                    e.printStackTrace();
+                    Toast.makeText(InsertActivity.this,"有表单尚未完成",Toast.LENGTH_LONG).show();
+                }
                 int id = item.getItemId();
                 if (id == R.id.query) {
                     insert_layout.setVisibility(View.GONE);
@@ -129,6 +136,7 @@ public class InsertActivity extends AppCompatActivity
                     }
 
                 } else if (id == R.id.insert) {
+                    staffSelected = 1;
                     insert_layout.setVisibility(View.VISIBLE);
                     query_layout.setVisibility(View.GONE);
                     staff = new Staff[100];
@@ -279,6 +287,7 @@ public class InsertActivity extends AppCompatActivity
             public void onClick(View v) {
                 Order order=null;
                 try {
+                    save();
                   order= makeOrder();
                     Toast.makeText(InsertActivity.this,"保存成功当前单号:"+Order.getBarcode(""+py1.getText()+py2.getText(),new Date(),Integer.parseInt(ID)),Toast.LENGTH_LONG).show();
                 } catch (NullValueException e1) {
@@ -383,7 +392,7 @@ public class InsertActivity extends AppCompatActivity
     }
 
     private void save() throws NullValueException {
-        int index = Integer.parseInt(mss.get("staffnum").getSelectedItem().toString());
+        int index = staffSelected;
         try {
             Staff temstaff = new Staff(mss.get("category1").getSelectedItem().toString(), mss.get("category2").getSelectedItem().toString(),
                     Integer.parseInt(mse.get("number").getText().toString()), Integer.parseInt(mse.get("uniprice").getText().toString()));
